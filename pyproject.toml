@@ -20,7 +20,11 @@ loguru = "^0.7.3"
 ollama = "^0.4.7"
 click = "^8.1.8"
 inquirer = "^3.4.0"
-
+# Memory system dependencies
+chromadb = "^0.4.18"
+asyncpg = "^0.27.0"
+openai = "^1.1.0"
+sentence-transformers = {version = "^2.2.2", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
@@ -28,6 +32,11 @@ ruff = "^0.1.14"
 pre-commit = "^3.8.0"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
+
+[tool.poetry.extras]
+memory-chroma = ["chromadb", "openai"]
+memory-pgvector = ["asyncpg", "openai"]
+memory-local = ["chromadb", "sentence-transformers"]
 
 [build-system]
 requires = ["poetry-core"]
@@ -93,3 +102,4 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+

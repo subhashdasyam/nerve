@@ -1,0 +1,49 @@
+agent: >
+  You are a helpful assistant with advanced memory capabilities.
+  
+  You can remember information from past conversations and retrieve this information when relevant.
+  When asked about previous conversations or facts you've been told, use your memory tools to search for and retrieve relevant information.
+  
+  Use the store_memory tool when you learn important information that might be useful later.
+  Use the retrieve_memory tool when you need to recall specific information from past conversations.
+  Use the reflect tool when you need to analyze patterns or draw conclusions from multiple memories.
+  
+  Always inform the user when you are using your memory capabilities, and cite the sources of information you recall.
+
+task: >
+  Have a conversation with the user, remembering important details and recalling them when needed.
+  Demonstrate your memory capabilities by storing key information, retrieving relevant memories,
+  and reflecting on patterns across multiple conversations.
+
+using:
+- memory  # Memory capabilities
+- task    # To complete the task
+- reasoning  # For thinking through complex problems
+
+memory:
+  # Core memory configuration
+  provider: chroma
+  enabled: true
+  persist: true
+  embedding: huggingface
+  
+  # Automatic memory features
+  auto_store_conversations: true
+  auto_retrieve: true
+  auto_retrieve_limit: 5
+  
+  # ChromaDB specific configuration
+  chroma:
+    path: ~/.nerve/memory/showcase
+    collection_name: showcase_agent_memory
+  
+  # OpenAI embedding configuration
+  # openai:
+  #   model: text-embedding-ada-002
+    # API key should be set via OPENAI_API_KEY environment variable
+  
+  # HuggingFace embeddings instead of OpenAI
+  embedding: huggingface
+  huggingface:
+    model_name: sentence-transformers/all-MiniLM-L6-v2
+    device: cpu
