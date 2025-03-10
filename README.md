@@ -16,19 +16,19 @@
 
 Nerve is an ADK ( _Agent Development Kit_ ) designed to be a simple yet powerful platform for creating and executing LLM-based agents.
 
-\U0001f5a5\ufe0f Install with:
+🖥️ Install with:
 
 ```bash
 pip install nerve-adk
 ```
 
-\U0001f4a1 Create an agent with the guided procedure:
+💡 Create an agent with the guided procedure:
 
 ```bash
 nerve create new-agent
 ```
 
-\U0001f916 Agents are simple YAML files that can use a set of built-in tools such as a bash shell, file system primitives [and more](https://github.com/evilsocket/nerve/blob/main/docs/namespaces.md):
+🤖 Agents are simple YAML files that can use a set of built-in tools such as a bash shell, file system primitives [and more](https://github.com/evilsocket/nerve/blob/main/docs/namespaces.md):
 
 ```yaml
 # who
@@ -39,13 +39,13 @@ task: Find which running process is using more RAM.
 using: [task, shell]
 ```
 
-\U0001f680 Execute the agent with:
+🚀 Execute the agent with:
 
 ```bash
 nerve run new-agent
 ```
 
-\U0001f9e0 Memory capabilities with vector database integration:
+🛠️ Memory capabilities with vector database integration:
 
 ```yaml
 using:
@@ -58,7 +58,7 @@ memory:
   auto_retrieve: true
 ```
 
-\U0001f6e0\ufe0f The agent capabilities can be extended directly via YAML (the [android-agent](https://github.com/evilsocket/nerve/blob/main/examples/android-agent) is a perfect example of this):
+🛠️ The agent capabilities can be extended directly via YAML (the [android-agent](https://github.com/evilsocket/nerve/blob/main/examples/android-agent) is a perfect example of this):
 
 ```yaml
 tools:
@@ -72,7 +72,7 @@ tools:
     tool: curl wttr.in/{{ place }}
 ```
 
-\U0001f40d Or in Python, by adding a `tools.py` file, for more complex features (check this [webcam agent example](https://github.com/evilsocket/nerve/blob/main/examples/webcam)):
+🐍 Or in Python, by adding a `tools.py` file, for more complex features (check this [webcam agent example](https://github.com/evilsocket/nerve/blob/main/examples/webcam)):
 
 ```python
 import typing as t
@@ -88,7 +88,7 @@ def read_webcam_image(foo: t.Annotated[str, "Describe arguments to the model lik
     }
 ```
 
-\U0001f468\u200d\U0001f4bb Alternatively, you can use Nerve as a Python package and leverage its abstractions to create an entirely custom agent loop (see [the ADK examples](https://github.com/evilsocket/nerve/blob/main/examples/adk/)).
+👨‍💻 Alternatively, you can use Nerve as a Python package and leverage its abstractions to create an entirely custom agent loop (see [the ADK examples](https://github.com/evilsocket/nerve/blob/main/examples/adk/)).
 
 ## Features
 
