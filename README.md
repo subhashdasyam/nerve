@@ -16,19 +16,19 @@
 
 Nerve is an ADK ( _Agent Development Kit_ ) designed to be a simple yet powerful platform for creating and executing LLM-based agents.
 
-🖥️ Install with:
+\U0001f5a5\ufe0f Install with:
 
 ```bash
 pip install nerve-adk
 ```
 
-💡 Create an agent with the guided procedure:
+\U0001f4a1 Create an agent with the guided procedure:
 
 ```bash
 nerve create new-agent
 ```
 
-🤖 Agents are simple YAML files that can use a set of built-in tools such as a bash shell, file system primitives [and more](https://github.com/evilsocket/nerve/blob/main/docs/namespaces.md):
+\U0001f916 Agents are simple YAML files that can use a set of built-in tools such as a bash shell, file system primitives [and more](https://github.com/evilsocket/nerve/blob/main/docs/namespaces.md):
 
 ```yaml
 # who
@@ -39,13 +39,26 @@ task: Find which running process is using more RAM.
 using: [task, shell]
 ```
 
-🚀 Execute the agent with:
+\U0001f680 Execute the agent with:
 
 ```bash
 nerve run new-agent
 ```
 
-🛠️ The agent capabilities can be extended directly via YAML (the [android-agent](https://github.com/evilsocket/nerve/blob/main/examples/android-agent) is a perfect example of this):
+\U0001f9e0 Memory capabilities with vector database integration:
+
+```yaml
+using:
+- memory  # Adds memory namespace
+
+memory:
+  provider: chroma  # or pgvector
+  embedding: openai  # or huggingface
+  auto_store_conversations: true
+  auto_retrieve: true
+```
+
+\U0001f6e0\ufe0f The agent capabilities can be extended directly via YAML (the [android-agent](https://github.com/evilsocket/nerve/blob/main/examples/android-agent) is a perfect example of this):
 
 ```yaml
 tools:
@@ -59,7 +72,7 @@ tools:
     tool: curl wttr.in/{{ place }}
 ```
 
-🐍 Or in Python, by adding a `tools.py` file, for more complex features (check this [webcam agent example](https://github.com/evilsocket/nerve/blob/main/examples/webcam)):
+\U0001f40d Or in Python, by adding a `tools.py` file, for more complex features (check this [webcam agent example](https://github.com/evilsocket/nerve/blob/main/examples/webcam)):
 
 ```python
 import typing as t
@@ -75,7 +88,31 @@ def read_webcam_image(foo: t.Annotated[str, "Describe arguments to the model lik
     }
 ```
 
-👨‍💻 Alternatively, you can use Nerve as a Python package and leverage its abstractions to create an entirely custom agent loop (see [the ADK examples](https://github.com/evilsocket/nerve/blob/main/examples/adk/)).
+\U0001f468\u200d\U0001f4bb Alternatively, you can use Nerve as a Python package and leverage its abstractions to create an entirely custom agent loop (see [the ADK examples](https://github.com/evilsocket/nerve/blob/main/examples/adk/)).
+
+## Features
+
+### Memory System
+
+Nerve includes a powerful memory system enabling agents to remember information across conversations:
+
+- **Vector Database Support**: Store and retrieve memories using ChromaDB or pgvector
+- **Memory Types**: Episodic (conversations), Semantic (facts), and Working memories
+- **Embedding Options**: OpenAI or HuggingFace embedding models
+- **Automatic Features**: Conversation history tracking and relevant context retrieval
+- **Memory Tools**: Store, retrieve, and reflect on memories with dedicated tools
+
+To use memory capabilities:
+```bash
+# Install requirements
+pip install chromadb openai  # For ChromaDB with OpenAI embeddings
+# or
+pip install asyncpg openai  # For pgvector with OpenAI embeddings
+# or
+pip install chromadb sentence-transformers  # For local embeddings
+```
+
+See the [memory-agent example](https://github.com/evilsocket/nerve/blob/main/examples/memory-agent) for full usage.
 
 ## Usage
 

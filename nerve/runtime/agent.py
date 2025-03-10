@@ -9,6 +9,8 @@ from nerve.generation.conversation import FullHistoryStrategy
 from nerve.generation.litellm import LiteLLMEngine
 from nerve.models import Configuration, Tool
 from nerve.runtime import Runtime
+from nerve.memory.config import MemoryConfig
+from nerve.memory.integration import MemoryIntegration
 
 
 class Agent:
@@ -29,6 +31,23 @@ class Agent:
         self.conv_window_strategy = conv_window_strategy
 
         state.on_event("agent_created", {"agent": self})
+
+        # Memory integration
+        self.memory_integration = None
+        if hasattr(configuration, "memory"):
+            memory_config = configuration.memory
+            if isinstance(memory_config, dict):
+                memory_config = MemoryConfig(**memory_config)
+            elif memory_config is None:
+                memory_config = MemoryConfig(enabled=False)
+                
+            if memory_config.enabled:
+                self.memory_integration = MemoryIntegration(memory_config)
+
+    async def _initialize_memory(self) -> None:
+        """Initialize memory system if enabled."""
+        if self.memory_integration:
+            await self.memory_integration.initialize()
 
     @classmethod
     def create(
@@ -126,6 +145,8 @@ class Agent:
 
         if state.get_current_actor() != self:
             state.on_task_started(self)
+             # Initialize memory on first step
+            await self._initialize_memory()
 
         try:
             system_prompt = self._get_system_prompt()
@@ -134,6 +155,15 @@ class Agent:
             logger.debug(f"system_prompt: {system_prompt}")
             logger.debug(f"prompt: {prompt}")
             logger.debug(f"extra_tools: {extra_tools}")
+
+            # Add memory context to system prompt
+            if self.memory_integration:
+                memory_knowledge = await self.memory_integration.before_step(system_prompt, prompt)
+                for key, value in memory_knowledge.items():
+                    state.write_knowledge(key, value)
+
+            # Re-get the system prompt with the new knowledge
+            system_prompt = self._get_system_prompt()
 
             state.on_event(
                 "agent_step",
@@ -146,6 +176,24 @@ class Agent:
             )
 
             usage = await self.generation_engine.step(system_prompt, prompt, extra_tools)
+
+             # Store conversation in memory
+            if self.memory_integration:
+                # Get the last message from the generation engine
+                last_assistant_message = None
+                tool_calls = None
+                
+                if self.generation_engine.history:
+                    for msg in reversed(self.generation_engine.history):
+                        if isinstance(msg, dict) and msg.get("role") == "assistant":
+                            last_assistant_message = msg.get("content", "")
+                            tool_calls = msg.get("tool_calls", [])
+                            break
+                
+                if last_assistant_message:
+                    await self.memory_integration.after_step(prompt, last_assistant_message, tool_calls)
+
+
             logger.debug(f"usage: {usage}")
             return usage
         except click.exceptions.MissingParameter as e:
@@ -195,3 +243,9 @@ class Agent:
             timeout=timeout,
             start_state=start_state,
         ).run()
+
+    
+    async def close(self) -> None:
+        """Close the agent and release resources."""
+        if self.memory_integration:
+            await self.memory_integration.close()
